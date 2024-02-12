@@ -230,7 +230,7 @@ class MyPlace extends StatelessWidget {
       ),
       body: Consumer<PlaceModel>(builder: (context, place, child) {
         return Container(
-          child: Column(
+          child: ListView(
             children: <Widget>[
               MyPlaceDetail(
                   placeName: place.placeName,
