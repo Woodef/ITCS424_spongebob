@@ -78,32 +78,19 @@ class _RegisterPageState extends State<RegisterPage> {
                         ]),
                       ),
                       const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          MaterialButton(
-                            onPressed: () {
-                              formKey.currentState!.save();
-                              if (formKey.currentState!.validate()) {
-                                Navigator.pushNamed(context, '/login');
-                              } else {
-                                print("validation failed");
-                              }
-                            },
-                            child: const Text("Log in",
-                                style: TextStyle(color: Colors.black)),
-                            color: Colors.white,
-                          ),
-                          MaterialButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/register');
-                            },
-                            child: Text('Sign up',
-                                style: TextStyle(color: Colors.black)),
-                            color: Colors.white,
-                          ),
-                        ],
-                      )
+                      MaterialButton(
+                        onPressed: () {
+                          formKey.currentState!.save();
+                          if (formKey.currentState!.validate()) {
+                            Navigator.pushNamed(context, '/login');
+                          } else {
+                            print("validation failed");
+                          }
+                        },
+                        child: const Text("Register",
+                            style: TextStyle(color: Colors.black)),
+                        color: Colors.white,
+                      ),
                     ]),
                   ),
                 )

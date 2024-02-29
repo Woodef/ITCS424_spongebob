@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pollution_project/ui/widgets/MyNavigationBar.dart';
 
 class UserManagePage extends StatefulWidget {
   UserManagePage({Key? key}) : super(key: key);
@@ -12,14 +13,43 @@ class _UserManagePageState extends State<UserManagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('UserManagePage'),
+        // Grey background color
+        title: Text('General'), // Title "General"
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text('UserManagePage')],
-        ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _buildOptionButton(context, 'Change Email'),
+          _buildOptionButton(context, 'Change Password'),
+        ],
       ),
+      bottomNavigationBar: MyNavigationBar(),
     );
   }
+}
+
+Widget _buildOptionButton(BuildContext context, String text) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+    child: ElevatedButton(
+      onPressed: () {
+        // Handle button press, e.g., navigate to corresponding page
+        if (text == 'Change Email') {
+          // Navigate to change email page
+          Navigator.pushNamed(context, '/userEditEmailPage');
+        } else if (text == 'Change Password') {
+          // Navigate to change password page
+          Navigator.pushNamed(context, '/userEditPasswordPage');
+        }
+      },
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white, // White background color
+        padding: EdgeInsets.all(20),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(fontSize: 18),
+      ),
+    ),
+  );
 }

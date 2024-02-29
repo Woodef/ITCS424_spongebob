@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pollution_project/ui/widgets/MyNavigationBar.dart';
 
 class UserPage extends StatefulWidget {
   UserPage({Key? key}) : super(key: key);
@@ -12,14 +13,46 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('UserPage'),
+        title: Text('User Account'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text('UserPage')],
+          children: <Widget>[
+            CircleAvatar(
+              backgroundImage: AssetImage('assets/user_placeholder.png'),
+              radius: 50,
+            ),
+            SizedBox(height: 20),
+            Text(
+              'Name: John',
+              style: TextStyle(fontSize: 20),
+            ),
+            Text(
+              'Surname: Doe',
+              style: TextStyle(fontSize: 20),
+            ),
+            SizedBox(height: 40),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Manage Account'),
+              onTap: () {
+                // Implement Manage Account functionality
+                Navigator.pushNamed(context, '/userManage');
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.exit_to_app),
+              title: Text('Log Out'),
+              onTap: () {
+                // Implement log out functionality
+                Navigator.pushNamed(context, '/login');
+              },
+            ),
+          ],
         ),
       ),
+      bottomNavigationBar: MyNavigationBar(),
     );
   }
 }

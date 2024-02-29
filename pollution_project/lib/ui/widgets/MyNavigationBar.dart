@@ -11,7 +11,7 @@ class _MyNavigationBarState extends State<MyNavigationBar> {
   @override
   Widget build(BuildContext context) {
     var routes = ['/placeList', '/search', '/resourceList', '/user'];
-
+    var currentIndex = 0;
     return NavigationBar(
       destinations: const <Widget>[
         NavigationDestination(
@@ -34,10 +34,11 @@ class _MyNavigationBarState extends State<MyNavigationBar> {
           label: 'User',
         ),
       ],
-      selectedIndex: 0,
+      selectedIndex: currentIndex,
       onDestinationSelected: (int index) {
         setState(() {
-          Navigator.pushNamed(context, routes[index]);
+          currentIndex = index;
+          Navigator.pushNamed(context, routes[currentIndex]);
         });
       },
     );

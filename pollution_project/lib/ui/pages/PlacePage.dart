@@ -27,7 +27,7 @@ class _PlacePageState extends State<PlacePage> {
               ),
               Text(
                 'Place',
-                style: TextStyle(fontSize: 12),
+                style: TextStyle(fontSize: 15),
               )
             ],
           ),
@@ -118,7 +118,6 @@ class _PlacePageState extends State<PlacePage> {
                           )
                         ]),
                   ),
-                  Divider(color: Colors.black),
                   Container(
                       margin: EdgeInsets.all(30),
                       child: Column(

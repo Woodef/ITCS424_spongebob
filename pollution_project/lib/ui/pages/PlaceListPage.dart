@@ -50,11 +50,19 @@ class _PlaceListPageState extends State<PlaceListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Center(
-          child: Text(
-            'Air Pollution',
-            style: GoogleFonts.birthstone(
-              textStyle: const TextStyle(fontSize: 25, color: Colors.black),
-            ),
+          child: Column(
+            children: [
+              Text(
+                'Air Pollution',
+                style: GoogleFonts.birthstone(
+                  textStyle: const TextStyle(fontSize: 25, color: Colors.black),
+                ),
+              ),
+              Text(
+                'Place',
+                style: TextStyle(fontSize: 15),
+              )
+            ],
           ),
         ),
         automaticallyImplyLeading: false,
