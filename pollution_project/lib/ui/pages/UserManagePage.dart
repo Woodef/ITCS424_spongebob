@@ -23,7 +23,7 @@ class _UserManagePageState extends State<UserManagePage> {
           _buildOptionButton(context, 'Change Password'),
         ],
       ),
-      bottomNavigationBar: MyNavigationBar(),
+      bottomNavigationBar: MyNavigationBar(index: 3),
     );
   }
 }

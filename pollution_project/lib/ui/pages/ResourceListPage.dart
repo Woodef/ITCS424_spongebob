@@ -55,7 +55,7 @@ class Resources extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: MyNavigationBar(),
+      bottomNavigationBar: MyNavigationBar(index: 2),
     );
   }
 

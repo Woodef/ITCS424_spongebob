@@ -11,10 +11,19 @@ import 'package:pollution_project/ui/pages/ResourceListPage.dart';
 import 'package:pollution_project/ui/pages/SearchPage.dart';
 import 'package:pollution_project/ui/pages/PlaceManagePage.dart';
 import 'package:pollution_project/ui/pages/PlacePage.dart';
+import 'package:pollution_project/auth/MainPage.dart';
 import 'package:provider/provider.dart';
 import 'package:pollution_project/models/place.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(ChangeNotifierProvider(
       create: (context) => PlaceModel(), child: const MyApp()));
 }
@@ -32,7 +41,8 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => LoginPage(),
+          '/': (context) => const MainPage(),
+          '/main': (context) => const MainPage(),
           '/login': (context) => LoginPage(),
           '/register': (context) => RegisterPage(),
           '/placeList': (context) => PlaceListPage(),

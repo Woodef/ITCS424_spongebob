@@ -3,6 +3,8 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
 
@@ -12,6 +14,32 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormBuilderState>();
+
+  // text controllers
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  Future signIn() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.toLowerCase().trim(),
+        password: _passwordController.text.trim(),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+      } else if (e.code == 'wrong-password') {
+        print('Wrong password provided for that user.');
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +66,10 @@ class _LoginPageState extends State<LoginPage> {
                   padding: const EdgeInsets.all(30),
                   child: FormBuilder(
                     key: _formKey,
+                    initialValue: {'email': '', 'password': ''},
                     child: Column(children: [
                       FormBuilderTextField(
+                        controller: _emailController,
                         name: 'email',
                         decoration: const InputDecoration(
                           labelText: 'Email',
@@ -50,9 +80,11 @@ class _LoginPageState extends State<LoginPage> {
                               errorText: 'Please insert email'),
                           FormBuilderValidators.email(),
                         ]),
+                        keyboardType: TextInputType.emailAddress,
                       ),
                       const SizedBox(height: 15),
                       FormBuilderTextField(
+                        controller: _passwordController,
                         name: 'password',
                         obscureText: true,
                         decoration: const InputDecoration(
@@ -62,8 +94,6 @@ class _LoginPageState extends State<LoginPage> {
                         validator: FormBuilderValidators.compose([
                           FormBuilderValidators.required(
                               errorText: 'Please insert password'),
-                          FormBuilderValidators.minLength(6,
-                              errorText: 'in length 6 characters'),
                         ]),
                       ),
                       const SizedBox(height: 20),
@@ -74,7 +104,9 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () {
                               _formKey.currentState!.save();
                               if (_formKey.currentState!.validate()) {
-                                Navigator.pushNamed(context, '/placeList');
+                                print(_emailController.text.trim());
+                                signIn();
+                                Navigator.pushNamed(context, '/main');
                               } else {
                                 print("validation failed");
                               }

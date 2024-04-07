@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "581913523036",
+    "project_id": "pollution-project-4f27e",
+    "storage_bucket": "pollution-project-4f27e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581913523036:android:e9083e3880c992216c4799",
+        "android_client_info": {
+          "package_name": "com.example.pollution_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKjxD1AnmjHnXiZgDzTPluqHlf8og_QsU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pollution_project/ui/pages/LoginPage.dart';
+import 'package:pollution_project/ui/pages/PlaceListPage.dart';
 import 'package:pollution_project/ui/widgets/MyNavigationBar.dart';
 
 class UserPage extends StatefulWidget {
@@ -46,13 +49,14 @@ class _UserPageState extends State<UserPage> {
               title: Text('Log Out'),
               onTap: () {
                 // Implement log out functionality
-                Navigator.pushNamed(context, '/login');
+                FirebaseAuth.instance.signOut();
+                Navigator.pushNamed(context, '/main');
               },
             ),
           ],
         ),
       ),
-      bottomNavigationBar: MyNavigationBar(),
+      bottomNavigationBar: MyNavigationBar(index: 3),
     );
   }
 }

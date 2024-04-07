@@ -29,6 +29,7 @@ class PlaceModel extends ChangeNotifier {
 
   void setTp(int tp) {
     _tp = tp;
+    notifyListeners();
   }
 
   void setAqi(int aqi) {
