@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:pollution_project/ui/pages/PlacePage.dart';
+import 'package:pollution_project/ui/cityFunctions.dart';
 import 'package:pollution_project/ui/widgets/MyNavigationBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
@@ -17,53 +19,27 @@ class PlaceListPage extends StatefulWidget {
 }
 
 class _PlaceListPageState extends State<PlaceListPage> {
-  String _cityName = '';
-  String _stateName = '';
-  String _countryName = '';
-  int _aqius = 0;
-  int _tp = 0;
-  String _ic = '';
-
   @override
   Widget build(BuildContext context) {
     var user = context.watch<UserModel>();
-    List<Map<String, dynamic>> placeList = user.savePlaces;
-    // Future<void> getPlaces(String country, String state, String city) async {
-    //   final response = await http.get(Uri.parse(
-    //       'http://api.airvisual.com/v2/city?city=$city&state=$state&country=$country&key=${dotenv.env['apiKey']}'));
-    //   if (response.statusCode == 200) {
-    //     var city = json.decode(response.body);
-    //     print(city);
-    //     setState(() {
-    //       _stateName = city['data']['state'];
-    //       _countryName = city['data']['country'];
-    //       _cityName = city['data']['city'];
-    //       _aqius = city['data']['current']['pollution']['aqius'];
-    //       _tp = city['data']['current']['weather']['tp'];
-    //       _ic = city['data']['current']['weather']['ic'];
-    //     });
-    //   } else {
-    //     print(response.statusCode);
-    //   }
-    // }
+    List<Map<String, dynamic>> placeList = user.savePlaces; // for loop
 
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Column(
-            children: [
-              Text(
-                'Air Pollution',
-                style: GoogleFonts.birthstone(
-                  textStyle: const TextStyle(fontSize: 25, color: Colors.black),
-                ),
+        centerTitle: true,
+        title: Column(
+          children: [
+            Text(
+              'Air Pollution',
+              style: GoogleFonts.birthstone(
+                textStyle: const TextStyle(fontSize: 25, color: Colors.black),
               ),
-              const Text(
-                'Place',
-                style: TextStyle(fontSize: 15),
-              )
-            ],
-          ),
+            ),
+            const Text(
+              'Place',
+              style: TextStyle(fontSize: 15),
+            )
+          ],
         ),
         automaticallyImplyLeading: false,
       ),
@@ -79,10 +55,17 @@ class _PlaceListPageState extends State<PlaceListPage> {
             const SizedBox(height: 20),
             Expanded(
                 child: ListView.builder(
-              itemCount: 10,
+              itemCount: user.lengthPlace,
               itemBuilder: ((context, index) {
-                print(user.lengthPlace);
-                return _BoxItem();
+                print('PlaceList: ${user.lengthPlace}');
+                var place = placeList[index];
+                return BoxItem(
+                    city: place['city'],
+                    state: place['state'],
+                    country: place['country'],
+                    ic: place['ic'],
+                    tp: place['tp'],
+                    aqius: place['aqius']);
               }),
             )),
           ],
@@ -93,49 +76,106 @@ class _PlaceListPageState extends State<PlaceListPage> {
   }
 }
 
-Widget _BoxItem() {
-  return Container(
-    margin: EdgeInsets.all(10),
-    padding: EdgeInsets.all(10),
-    decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.black),
-        borderRadius: BorderRadius.all(Radius.circular(10))),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: <Widget>[
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+class BoxItem extends StatelessWidget {
+  final String city;
+  final String state;
+  final String country;
+  final String ic;
+  final int tp;
+  final int aqius;
+
+  BoxItem({
+    Key? key,
+    required this.city,
+    required this.state,
+    required this.country,
+    required this.ic,
+    required this.tp,
+    required this.aqius,
+  }) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                PlacePage(country: country, state: state, city: city),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.black),
+            borderRadius: BorderRadius.all(Radius.circular(10))),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Icon(Icons.wb_sunny),
-                SizedBox(width: 5),
-                Text('Place Name'),
+                Row(
+                  children: <Widget>[
+                    Text(
+                      '$city, $state',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Text('$country', style: TextStyle(fontWeight: FontWeight.w500)),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Image.network(
+                      'https://www.airvisual.com/images/${getImage(ic)}.png',
+                      height: 20,
+                    ),
+                    SizedBox(width: 5),
+                    Text('${tp.toString()}°'),
+                  ],
+                ),
               ],
             ),
-            SizedBox(height: 10),
-            Text('Location'),
-            SizedBox(height: 10),
-            Text('Dust: High'),
-          ],
-        ),
-        VerticalDivider(),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Row(
+            VerticalDivider(),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Icon(Icons.cloud),
-                SizedBox(width: 5),
-                Text('Weather'),
+                Row(
+                  children: <Widget>[
+                    SizedBox(width: 5),
+                    Text(
+                      getDescription(aqius),
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                      softWrap: true,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5),
+                Container(
+                  padding: EdgeInsets.all(1.5),
+                  width: 30,
+                  color: getBgColor(aqius),
+                  child: Center(
+                    child: Text(
+                      aqius.toString(),
+                      style: TextStyle(
+                          fontSize: 15,
+                          color: getTxtColor(aqius),
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+                Text('US AQI', style: TextStyle(fontWeight: FontWeight.w500)),
               ],
             ),
-            SizedBox(height: 10),
-            Text('Temperature: 25°C'),
           ],
         ),
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }

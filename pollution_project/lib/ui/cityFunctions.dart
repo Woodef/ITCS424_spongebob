@@ -32,7 +32,7 @@ String getDescription(int aqius) {
   } else if (aqius >= 51 && aqius <= 100) {
     return 'Moderate';
   } else if (aqius >= 101 && aqius <= 150) {
-    return 'Unhealthy for sensitive group';
+    return 'Unhealthy for sensitives';
   } else if (aqius >= 151 && aqius <= 200) {
     return 'Unhealthy';
   } else if (aqius >= 201 && aqius <= 300) {

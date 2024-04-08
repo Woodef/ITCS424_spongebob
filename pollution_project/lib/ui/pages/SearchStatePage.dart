@@ -53,7 +53,7 @@ class _SearchStatePageState extends State<SearchStatePage> {
           .toList();
     }
     setState(() {
-      _stateList = results;
+      _foundStates = results;
     });
   }
 

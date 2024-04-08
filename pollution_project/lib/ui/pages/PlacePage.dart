@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,9 +11,9 @@ import 'package:pollution_project/ui/cityFunctions.dart';
 import 'package:provider/provider.dart';
 
 class PlacePage extends StatefulWidget {
-  String country = 'Thailand';
-  String state = 'Bangkok';
-  String city = 'Phasi Charoen';
+  String country;
+  String state;
+  String city;
 
   PlacePage({
     Key? key,
@@ -62,8 +63,21 @@ class _PlacePageState extends State<PlacePage> {
 
   @override
   Widget build(BuildContext context) {
+    print(_countryName);
+
     var user = context.watch<UserModel>();
+    user.setCountry(_countryName);
+    user.setState(_stateName);
+    user.setCity(_cityName);
+    user.setAqius(_aqius);
+    user.setTp(_tp);
+    user.setHu(_hu);
+    user.setIc(_ic);
+
     IconData icon;
+    print(user.savePlaces);
+    print(user.lengthPlace);
+    print(user.placeExists(_countryName, _stateName, _cityName));
     if (user.placeExists(_countryName, _stateName, _cityName)) {
       icon = Icons.remove;
     } else {
@@ -72,21 +86,20 @@ class _PlacePageState extends State<PlacePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Column(
-            children: [
-              Text(
-                'Air Pollution',
-                style: GoogleFonts.birthstone(
-                  textStyle: const TextStyle(fontSize: 25, color: Colors.black),
-                ),
+        centerTitle: true,
+        title: Column(
+          children: [
+            Text(
+              'Air Pollution',
+              style: GoogleFonts.birthstone(
+                textStyle: const TextStyle(fontSize: 25, color: Colors.black),
               ),
-              Text(
-                'Place',
-                style: TextStyle(fontSize: 15),
-              )
-            ],
-          ),
+            ),
+            Text(
+              'Place',
+              style: TextStyle(fontSize: 15),
+            )
+          ],
         ),
       ),
       body: Container(
@@ -101,13 +114,13 @@ class _PlacePageState extends State<PlacePage> {
             child: ListView(
               children: [
                 MyCurrentDetail(
-                  cityName: _cityName,
-                  countryName: _countryName,
-                  stateName: _stateName,
-                  aqius: _aqius,
-                  ic: _ic,
-                  tp: _tp,
-                  hu: _hu,
+                  cityName: user.city,
+                  countryName: user.country,
+                  stateName: user.state,
+                  aqius: user.aqius,
+                  ic: user.ic,
+                  tp: user.tp,
+                  hu: user.hu,
                 )
               ],
             ),
@@ -118,10 +131,9 @@ class _PlacePageState extends State<PlacePage> {
           tooltip: 'Place Added',
           onPressed: () {
             if (user.placeExists(_countryName, _stateName, _cityName)) {
-              user.removeFromSavedPlaces(_countryName, _stateName, _cityName,
-                  user.lengthPlace == 0 ? 0 : user.lengthPlace - 1);
+              user.removeFromSavedPlaces(_countryName, _stateName, _cityName);
             } else {
-              user.addToSavedPlaces(_countryName, _stateName, _cityName);
+              user.addToSavedPlaces();
             }
           },
           // how to make this change automatically?
@@ -159,7 +171,7 @@ class MyCurrentDetail extends StatelessWidget {
           Text(
             this.cityName,
             style: TextStyle(
-              fontSize: 45,
+              fontSize: 40,
               height: 1.1,
               fontWeight: FontWeight.w600,
             ),
@@ -168,7 +180,7 @@ class MyCurrentDetail extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             this.stateName,
-            style: TextStyle(fontSize: 35, height: 1.1),
+            style: TextStyle(fontSize: 30, height: 1.1),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 10),
@@ -178,11 +190,16 @@ class MyCurrentDetail extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 15),
-          Text(
-            this.aqius.toString(),
-            style: TextStyle(
-              fontSize: 60,
-              fontWeight: FontWeight.w600,
+          Container(
+            color: getBgColor(aqius),
+            padding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+            margin: EdgeInsets.all(10),
+            child: Text(
+              this.aqius.toString(),
+              style: TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.w600,
+                  color: getTxtColor(aqius)),
             ),
           ),
           Text('US AQI',
@@ -192,6 +209,7 @@ class MyCurrentDetail extends StatelessWidget {
           const SizedBox(height: 15),
           Text(
             getDescription(aqius),
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w600,

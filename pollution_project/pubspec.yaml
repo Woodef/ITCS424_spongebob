@@ -43,6 +43,7 @@ dependencies:
   firebase_core: ^2.27.1
   cloud_firestore: ^4.15.9
   firebase_auth: ^4.17.9
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -69,11 +70,8 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/background.png
-    - assets/images/smile.png
-    - assets/images/cloudy_sun.png
-    - assets/images/cloudy.png
-    - assets/images/sunny.png
-    - assets/images/thunderstorm.png
+    - assets/images/user-icon.png
+    - .env
     
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

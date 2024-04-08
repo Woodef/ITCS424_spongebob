@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pollution_project/ui/widgets/MyNavigationBar.dart';
 
 class UserManagePage extends StatefulWidget {
@@ -13,15 +14,37 @@ class _UserManagePageState extends State<UserManagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // Grey background color
-        title: Text('General'), // Title "General"
+        centerTitle: true,
+        title: Column(
+          children: [
+            Text(
+              'Air Pollution',
+              style: GoogleFonts.birthstone(
+                textStyle: const TextStyle(fontSize: 25, color: Colors.black),
+              ),
+            ),
+            Text(
+              'User Account',
+              style: TextStyle(fontSize: 15),
+            )
+          ],
+        ),
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _buildOptionButton(context, 'Change Email'),
-          _buildOptionButton(context, 'Change Password'),
-        ],
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/background.png'),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.white, BlendMode.softLight),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(height: 10),
+            _buildOptionButton(context, 'Change Password'),
+          ],
+        ),
       ),
       bottomNavigationBar: MyNavigationBar(index: 3),
     );

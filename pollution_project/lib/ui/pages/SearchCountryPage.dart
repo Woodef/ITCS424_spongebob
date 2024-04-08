@@ -76,7 +76,7 @@ class _SearchCountryPageState extends State<SearchCountryPage> {
                   textStyle: const TextStyle(fontSize: 25, color: Colors.black),
                 ),
               ),
-              Text(
+              const Text(
                 'Search',
                 style: TextStyle(fontSize: 15),
               )

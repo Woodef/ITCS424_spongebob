@@ -28,11 +28,11 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.toLowerCase().trim(),
         password: _passwordController.text.trim(),
       );
-      var user = context.read<UserModel>();
-      user.setEmail(_emailController.text.toLowerCase().trim());
-      user.setFullname();
-      user.getPlacesFromSavedPlaces();
-      Navigator.pushReplacementNamed(context, '/');
+      // var user = context.read<UserModel>();
+      // user.setEmail(_emailController.text.toLowerCase().trim());
+      // user.setFullname();
+      // user.getPlacesFromSavedPlaces();
+      // Navigator.pushReplacementNamed(context, '/');
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = 'Invalid login';
