@@ -1,19 +1,75 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pollution_project/models/user.dart';
 import 'package:pollution_project/ui/widgets/MyNavigationBar.dart';
-import 'package:pollution_project/models/place.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:pollution_project/ui/cityFunctions.dart';
 import 'package:provider/provider.dart';
 
 class PlacePage extends StatefulWidget {
-  PlacePage({Key? key}) : super(key: key);
+  String country = 'Thailand';
+  String state = 'Bangkok';
+  String city = 'Phasi Charoen';
+
+  PlacePage({
+    Key? key,
+    required this.country,
+    required this.state,
+    required this.city,
+  }) : super(key: key);
 
   @override
   _PlacePageState createState() => _PlacePageState();
 }
 
 class _PlacePageState extends State<PlacePage> {
+  String _cityName = '';
+  String _stateName = '';
+  String _countryName = '';
+  int _aqius = 0;
+  int _tp = 0;
+  int _hu = 0;
+  String _ic = '';
+
+  Future<void> _getCity() async {
+    final response = await http.get(Uri.parse(
+        'http://api.airvisual.com/v2/city?city=${widget.city}&state=${widget.state}&country=${widget.country}&key=${dotenv.env['apiKey']}'));
+    if (response.statusCode == 200) {
+      var city = json.decode(response.body);
+      print(city);
+      setState(() {
+        _stateName = city['data']['state'];
+        _countryName = city['data']['country'];
+        _cityName = city['data']['city'];
+        _aqius = city['data']['current']['pollution']['aqius'];
+        _tp = city['data']['current']['weather']['tp'];
+        _hu = city['data']['current']['weather']['hu'];
+        _ic = city['data']['current']['weather']['ic'];
+      });
+    } else {
+      print(response.statusCode);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getCity();
+  }
+
   @override
   Widget build(BuildContext context) {
+    var user = context.watch<UserModel>();
+    IconData icon;
+    if (user.placeExists(_countryName, _stateName, _cityName)) {
+      icon = Icons.remove;
+    } else {
+      icon = Icons.add;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -34,204 +90,138 @@ class _PlacePageState extends State<PlacePage> {
         ),
       ),
       body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/background.png'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(Colors.white, BlendMode.softLight),
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/background.png'),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.white, BlendMode.softLight),
+            ),
           ),
-        ),
-        child: Consumer<PlaceModel>(
-          builder: (context, place, child) {
-            return Container(
-              child: ListView(
-                children: [
-                  MyPlaceDetail(
-                      placeName: place.cityName,
-                      aqi: place.aqi,
-                      desc: place.desc),
-                  Container(
-                    padding: EdgeInsets.all(15),
-                    color: Colors.white,
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Column(
-                            children: <Widget>[
-                              const Text('12:00'),
-                              Text(
-                                "${place.minAqi} - ${place.maxAqi}",
-                                style: TextStyle(
-                                    backgroundColor: place.bgColor,
-                                    color: place.txtColor),
-                              ),
-                              const Text('30°')
-                            ],
-                          ),
-                          Column(
-                            children: <Widget>[
-                              const Text('13:00'),
-                              Text(
-                                "${place.minAqi} - ${place.maxAqi}",
-                                style: TextStyle(
-                                    backgroundColor: place.bgColor,
-                                    color: place.txtColor),
-                              ),
-                              const Text('30°')
-                            ],
-                          ),
-                          Column(
-                            children: <Widget>[
-                              const Text('14:00'),
-                              Text(
-                                "${place.minAqi} - ${place.maxAqi}",
-                                style: TextStyle(
-                                    backgroundColor: place.bgColor,
-                                    color: place.txtColor),
-                              ),
-                              const Text('30°')
-                            ],
-                          ),
-                          Column(
-                            children: <Widget>[
-                              const Text('15:00'),
-                              Text(
-                                "${place.minAqi} - ${place.maxAqi}",
-                                style: TextStyle(
-                                    backgroundColor: place.bgColor,
-                                    color: place.txtColor),
-                              ),
-                              const Text('30°')
-                            ],
-                          ),
-                          Column(
-                            children: <Widget>[
-                              const Text('16:00'),
-                              Text(
-                                "${place.minAqi} - ${place.maxAqi}",
-                                style: TextStyle(
-                                    backgroundColor: place.bgColor,
-                                    color: place.txtColor),
-                              ),
-                              const Text('30°')
-                            ],
-                          )
-                        ]),
-                  ),
-                  Container(
-                      margin: EdgeInsets.all(30),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Text('Wed', style: TextStyle(fontSize: 20)),
-                              Image(
-                                image: ResizeImage(
-                                    AssetImage("assets/images/sunny.png"),
-                                    width: 40),
-                              ),
-                              Text('35° - 40°', style: TextStyle(fontSize: 20))
-                            ],
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Text('Thu', style: TextStyle(fontSize: 20)),
-                              Image(
-                                image: ResizeImage(
-                                    AssetImage(
-                                        "assets/images/thunderstorm.png"),
-                                    width: 40),
-                              ),
-                              Text('29° - 33°', style: TextStyle(fontSize: 20))
-                            ],
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Text('Fri', style: TextStyle(fontSize: 20)),
-                              Image(
-                                image: ResizeImage(
-                                    AssetImage("assets/images/cloudy.png"),
-                                    width: 40),
-                              ),
-                              Text('32° - 36°', style: TextStyle(fontSize: 20))
-                            ],
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Text('Sat', style: TextStyle(fontSize: 20)),
-                              Image(
-                                image: ResizeImage(
-                                    AssetImage("assets/images/sunny.png"),
-                                    width: 40),
-                              ),
-                              Text('35° - 40°', style: TextStyle(fontSize: 20))
-                            ],
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          ),
-                          Row(
-                            children: <Widget>[
-                              Text('Sun', style: TextStyle(fontSize: 20)),
-                              Image(
-                                image: ResizeImage(
-                                    AssetImage("assets/images/cloudy.png"),
-                                    width: 40),
-                              ),
-                              Text('32° - 36°', style: TextStyle(fontSize: 20))
-                            ],
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          )
-                        ],
-                      )),
-                ],
-              ),
-            );
-          },
-        ),
-      ),
+          child: Container(
+            child: ListView(
+              children: [
+                MyCurrentDetail(
+                  cityName: _cityName,
+                  countryName: _countryName,
+                  stateName: _stateName,
+                  aqius: _aqius,
+                  ic: _ic,
+                  tp: _tp,
+                  hu: _hu,
+                )
+              ],
+            ),
+          )),
       bottomNavigationBar: MyNavigationBar(),
+      floatingActionButton: FloatingActionButton.small(
+          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+          tooltip: 'Place Added',
+          onPressed: () {
+            if (user.placeExists(_countryName, _stateName, _cityName)) {
+              user.removeFromSavedPlaces(_countryName, _stateName, _cityName,
+                  user.lengthPlace == 0 ? 0 : user.lengthPlace - 1);
+            } else {
+              user.addToSavedPlaces(_countryName, _stateName, _cityName);
+            }
+          },
+          // how to make this change automatically?
+          child: Icon(icon, color: Color.fromARGB(255, 0, 31, 96), size: 28)),
     );
   }
 }
 
-class MyPlaceDetail extends StatelessWidget {
-  final String placeName;
-  final int aqi;
-  final String desc;
+class MyCurrentDetail extends StatelessWidget {
+  final String countryName;
+  final String stateName;
+  final String cityName;
+  final int aqius;
+  final String ic;
+  final int tp;
+  final int hu;
 
-  MyPlaceDetail(
-      {Key? key,
-      required this.placeName,
-      required this.aqi,
-      required this.desc})
-      : super(key: key);
+  MyCurrentDetail({
+    Key? key,
+    required this.countryName,
+    required this.stateName,
+    required this.cityName,
+    required this.aqius,
+    required this.ic,
+    required this.tp,
+    required this.hu,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      child: Column(children: <Widget>[
-        Container(
-          child: Text(this.placeName, style: TextStyle(fontSize: 30)),
-        ),
-        Text(
-          this.aqi.toString(),
-          style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold),
-        ),
-        Text('US AQI', style: TextStyle(fontSize: 20)),
-        Container(
-          child: Text(
-            this.desc,
+      child: Column(
+        children: <Widget>[
+          const SizedBox(height: 5),
+          Text(
+            this.cityName,
             style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+              fontSize: 45,
+              height: 1.1,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            this.stateName,
+            style: TextStyle(fontSize: 35, height: 1.1),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 10),
+          Text(
+            this.countryName,
+            style: TextStyle(fontSize: 25, height: 1.1),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 15),
+          Text(
+            this.aqius.toString(),
+            style: TextStyle(
+              fontSize: 60,
+              fontWeight: FontWeight.w600,
             ),
           ),
-          margin: EdgeInsets.fromLTRB(0, 30, 0, 0),
-        )
-      ]),
-      alignment: Alignment.topCenter,
+          Text('US AQI',
+              style: TextStyle(
+                fontSize: 25,
+              )),
+          const SizedBox(height: 15),
+          Text(
+            getDescription(aqius),
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Row(
+                children: [
+                  Image.network(
+                    'https://www.airvisual.com/images/${getImage(this.ic)}.png',
+                    height: 40,
+                  ),
+                  SizedBox(width: 5),
+                  Text('${this.tp.toString()}°',
+                      style: TextStyle(fontSize: 20)),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(Icons.water_drop_rounded),
+                  Text('${this.hu}%', style: TextStyle(fontSize: 20)),
+                ],
+              )
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          )
+        ],
+      ),
       padding: EdgeInsets.all(50),
     );
   }

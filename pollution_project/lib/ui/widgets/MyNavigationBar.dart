@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
 
-class MyNavigationBar extends StatefulWidget {
-  int index;
-  MyNavigationBar({Key? key, this.index = 0}) : super(key: key);
+class MyNavigationBar extends StatelessWidget {
+  const MyNavigationBar({super.key, this.index = 0});
 
-  @override
-  _MyNavigationBarState createState() => _MyNavigationBarState();
-}
+  final int index;
 
-class _MyNavigationBarState extends State<MyNavigationBar> {
   @override
   Widget build(BuildContext context) {
     var routes = ['/placeList', '/search', '/resourceList', '/user'];
@@ -35,13 +31,9 @@ class _MyNavigationBarState extends State<MyNavigationBar> {
           label: 'User',
         ),
       ],
-      selectedIndex: widget.index,
+      selectedIndex: index,
       onDestinationSelected: (int index) {
-        setState(() {
-          // pass index as parameter
-          widget.index = index;
-          Navigator.pushNamed(context, routes[widget.index]);
-        });
+        Navigator.pushNamed(context, routes[index]);
       },
     );
   }

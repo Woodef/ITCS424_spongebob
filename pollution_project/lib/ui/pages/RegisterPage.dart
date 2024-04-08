@@ -13,11 +13,14 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final _formKey = GlobalKey<FormBuilderState>();
+
   // text controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmpasswordController = TextEditingController();
   final _fullnameController = TextEditingController();
+  String? _errorMessage;
 
   @override
   void dispose() {
@@ -29,10 +32,10 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future addUserDetails(String fullname, String email) async {
-    await FirebaseFirestore.instance.collection('users').add({
+    await FirebaseFirestore.instance.collection('users').doc(email).set({
       'full_name': fullname,
       'email': email,
-    });
+    }).onError((e, _) => print('Error writing document: $e'));
   }
 
   bool passwordConfirmed() {
@@ -46,8 +49,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final formKey = GlobalKey<FormBuilderState>();
-
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -70,7 +71,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 Padding(
                   padding: const EdgeInsets.all(30),
                   child: FormBuilder(
-                    key: formKey,
+                    key: _formKey,
                     initialValue: {
                       'name': '',
                       'email': '',
@@ -147,10 +148,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         ]),
                       ),
                       const SizedBox(height: 20),
+                      if (_errorMessage != null)
+                        Text(
+                          _errorMessage!,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      const SizedBox(height: 20),
                       MaterialButton(
                         onPressed: () async {
-                          formKey.currentState!.save();
-                          if (formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          if (_formKey.currentState!.validate()) {
                             // Authenticate user
                             try {
                               if (passwordConfirmed()) {
@@ -170,23 +177,24 @@ class _RegisterPageState extends State<RegisterPage> {
                                   _emailController.text.trim(),
                                 );
 
-                                Navigator.pushNamed(context, '/login');
+                                Navigator.pushReplacementNamed(
+                                    context, '/login');
                               }
                             } on FirebaseAuthException catch (e) {
-                              if (e.code == 'weak-password') {
-                                print('The password provided is too weak.');
-                              } else if (e.code == 'email-already-in-use') {
-                                print(
-                                    'The account already exists for that email.');
-                              }
-                              Navigator.pushNamed(context, '/register');
+                              setState(() {
+                                if (e.code == 'weak-password') {
+                                  _errorMessage =
+                                      'The password provided is too weak.';
+                                } else if (e.code == 'email-already-in-use') {
+                                  _errorMessage = 'Email already exists';
+                                }
+                              });
+                              print(_errorMessage);
                             } catch (e) {
                               print(e);
-                              Navigator.pushNamed(context, '/register');
                             }
                           } else {
                             print("validation failed");
-                            Navigator.pushNamed(context, '/register');
                           }
                         },
                         child: const Text("Register",
@@ -206,7 +214,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           const SizedBox(width: 10),
                           GestureDetector(
                             onTap: () {
-                              Navigator.pushNamed(context, '/login');
+                              Navigator.pushReplacementNamed(context, '/login');
                             },
                             child: const Text(
                               'Login now',

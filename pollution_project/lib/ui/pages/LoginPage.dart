@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:pollution_project/models/user.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   // text controllers
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  String? _errorMessage;
 
   Future signIn() async {
     try {
@@ -25,12 +28,16 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.toLowerCase().trim(),
         password: _passwordController.text.trim(),
       );
+      var user = context.read<UserModel>();
+      user.setEmail(_emailController.text.toLowerCase().trim());
+      user.setFullname();
+      user.getPlacesFromSavedPlaces();
+      Navigator.pushReplacementNamed(context, '/');
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-      }
+      setState(() {
+        _errorMessage = 'Invalid login';
+      });
+      print(_errorMessage);
     }
   }
 
@@ -97,6 +104,12 @@ class _LoginPageState extends State<LoginPage> {
                         ]),
                       ),
                       const SizedBox(height: 20),
+                      if (_errorMessage != null)
+                        Text(
+                          _errorMessage!,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
@@ -106,7 +119,6 @@ class _LoginPageState extends State<LoginPage> {
                               if (_formKey.currentState!.validate()) {
                                 print(_emailController.text.trim());
                                 signIn();
-                                Navigator.pushNamed(context, '/main');
                               } else {
                                 print("validation failed");
                               }
@@ -117,7 +129,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           MaterialButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, '/register');
+                              Navigator.pushReplacementNamed(
+                                  context, '/register');
                             },
                             child: Text('Sign up',
                                 style: TextStyle(color: Colors.black)),
