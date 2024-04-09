@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pollution_project/models/user.dart';
-
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pollution_project/models/user.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -28,11 +27,11 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.toLowerCase().trim(),
         password: _passwordController.text.trim(),
       );
-      // var user = context.read<UserModel>();
-      // user.setEmail(_emailController.text.toLowerCase().trim());
-      // user.setFullname();
-      // user.getPlacesFromSavedPlaces();
-      // Navigator.pushReplacementNamed(context, '/');
+      var user = context.read<UserModel>();
+      user.setEmail(_emailController.text.toLowerCase().trim());
+      user.setFullname();
+      user.setPlacesFromSavedPlaces();
+      Navigator.pushReplacementNamed(context, '/');
     } on FirebaseAuthException catch (e) {
       setState(() {
         _errorMessage = 'Invalid login';

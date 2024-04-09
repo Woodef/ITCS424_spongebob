@@ -70,21 +70,20 @@ class _SearchCityPageState extends State<SearchCityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: Column(
-            children: [
-              Text(
-                'Air Pollution',
-                style: GoogleFonts.birthstone(
-                  textStyle: const TextStyle(fontSize: 25, color: Colors.black),
-                ),
+        centerTitle: true,
+        title: Column(
+          children: [
+            Text(
+              'Air Pollution',
+              style: GoogleFonts.birthstone(
+                textStyle: const TextStyle(fontSize: 25, color: Colors.black),
               ),
-              Text(
-                'Search',
-                style: TextStyle(fontSize: 15),
-              )
-            ],
-          ),
+            ),
+            Text(
+              'Search',
+              style: TextStyle(fontSize: 15),
+            )
+          ],
         ),
       ),
       body: Padding(

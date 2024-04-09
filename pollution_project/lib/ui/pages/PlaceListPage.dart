@@ -1,12 +1,7 @@
-import 'dart:async';
-import 'dart:convert';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pollution_project/ui/pages/PlacePage.dart';
 import 'package:pollution_project/ui/cityFunctions.dart';
 import 'package:pollution_project/ui/widgets/MyNavigationBar.dart';
-import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:pollution_project/models/user.dart';
