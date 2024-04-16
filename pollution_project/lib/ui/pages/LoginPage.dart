@@ -27,11 +27,6 @@ class _LoginPageState extends State<LoginPage> {
         email: _emailController.text.toLowerCase().trim(),
         password: _passwordController.text.trim(),
       );
-      var user = context.read<UserModel>();
-      await user.reset();
-      await user.setEmail(_emailController.text.toLowerCase().trim());
-      await user.setFullname();
-      await user.setPlacesFromSavedPlaces();
       Navigator.pushReplacementNamed(context, '/');
     } on FirebaseAuthException catch (e) {
       setState(() {

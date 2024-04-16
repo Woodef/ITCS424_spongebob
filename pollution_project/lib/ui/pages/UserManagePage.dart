@@ -57,10 +57,7 @@ Widget _buildOptionButton(BuildContext context, String text) {
     child: ElevatedButton(
       onPressed: () {
         // Handle button press, e.g., navigate to corresponding page
-        if (text == 'Change Email') {
-          // Navigate to change email page
-          Navigator.pushNamed(context, '/userEditEmailPage');
-        } else if (text == 'Change Password') {
+        if (text == 'Change Password') {
           // Navigate to change password page
           Navigator.pushNamed(context, '/userEditPasswordPage');
         }

@@ -36,7 +36,6 @@ class _PlacePageState extends State<PlacePage> {
   int _hu = 0;
   String _ic = '';
   bool _isLoading = true;
-  int _response_code = 200;
 
   Future<void> _getCity() async {
     var user = context.watch<UserModel>();
@@ -66,7 +65,6 @@ class _PlacePageState extends State<PlacePage> {
         });
       } else {
         setState(() {
-          _response_code = response.statusCode;
           _stateName = 'Unable to fetch data from API';
           _countryName = 'error: ${response.statusCode}';
           _cityName = 'error: ${response.statusCode}';
@@ -74,7 +72,7 @@ class _PlacePageState extends State<PlacePage> {
           _tp = 0;
           _hu = 0;
           _ic = 'error';
-          _response_code = response.statusCode;
+          _isLoading = false;
         });
         print(response.statusCode);
       }

@@ -6,7 +6,7 @@ import 'package:pollution_project/ui/pages/LoginPage.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatelessWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,8 @@ class MainPage extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            print(snapshot.data);
+            //If user is login
+            // print(snapshot.data);
             var user = context.read<UserModel>();
             user.reset();
             user.setEmail(snapshot.data!.email!);

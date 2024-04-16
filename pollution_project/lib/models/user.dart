@@ -19,6 +19,7 @@ class UserModel extends ChangeNotifier {
   int _tp = 0;
   int _hu = 0;
   String _ic = '';
+  bool isLocked = false;
 
   // Getter
   String get email => _email;
@@ -43,7 +44,7 @@ class UserModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Set full name
+  // Set full name from Firestore
   Future<void> setFullname() async {
     db.collection('users').doc(_email).get().then(
       (DocumentSnapshot doc) {
@@ -72,11 +73,20 @@ class UserModel extends ChangeNotifier {
         print('${docSnapshot.id} => $data');
 
         // Perform asynchronous operation to get city details
-        await getCity(data['country'], data['state'], data['city']);
-        print('$country $state $city');
-        print(placeExists(country, state, city));
-        print(savePlaces);
-        if (!placeExists(country, state, city)) {
+        int responseCode = 0;
+        // print(isLocked);
+        if (!isLocked) {
+          isLocked = true;
+          responseCode =
+              await getCity(data['country'], data['state'], data['city']);
+        }
+
+        // print('$country $state $city');
+        // print(placeExists(country, state, city));
+        // print(savePlaces);
+        // print(responseCode);
+
+        if (!placeExists(country, state, city) && responseCode == 200) {
           savePlaces.insert(data['order'], <String, dynamic>{
             'order': data['order'],
             'country': _countryName,
@@ -87,6 +97,7 @@ class UserModel extends ChangeNotifier {
             'hu': _hu,
             'ic': _ic,
           });
+          isLocked = false;
         }
       }
     } catch (e) {
@@ -96,7 +107,8 @@ class UserModel extends ChangeNotifier {
   }
 
   // Get each city and set city variable in user model
-  Future<void> getCity(String country, String state, String city) async {
+  Future<int> getCity(String country, String state, String city) async {
+    // AirVisual API call
     final response = await http.get(Uri.parse(
         'http://api.airvisual.com/v2/city?city=$city&state=$state&country=$country&key=${dotenv.env['apiKey']}'));
     if (response.statusCode == 200) {
@@ -110,15 +122,9 @@ class UserModel extends ChangeNotifier {
       _hu = city['data']['current']['weather']['hu'];
       _ic = city['data']['current']['weather']['ic'];
     } else {
-      _stateName = 'ERROR';
-      _countryName = 'ERROR';
-      _cityName = 'ERROR';
-      _aqius = response.statusCode;
-      _tp = response.statusCode;
-      _hu = response.statusCode;
-      _ic = 'error';
       print(response.statusCode);
     }
+    return response.statusCode;
   }
 
   // Add place to array and firestore
