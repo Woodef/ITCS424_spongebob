@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pollution_project/ui/pages/PlacePage.dart';
 import 'package:pollution_project/ui/cityFunctions.dart';
+import 'package:pollution_project/ui/pages/LoadingPage.dart';
 import 'package:pollution_project/ui/widgets/MyNavigationBar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +20,9 @@ class _PlaceListPageState extends State<PlaceListPage> {
   Widget build(BuildContext context) {
     var user = context.watch<UserModel>();
     List<Map<String, dynamic>> placeList = user.savePlaces; // for loop
+    print(user.savePlaces);
+    int placeLength = user.lengthPlace;
+    print('PlaceList: $placeLength');
 
     return Scaffold(
       appBar: AppBar(
@@ -50,17 +55,20 @@ class _PlaceListPageState extends State<PlaceListPage> {
             const SizedBox(height: 20),
             Expanded(
                 child: ListView.builder(
-              itemCount: user.lengthPlace,
+              itemCount: placeLength,
               itemBuilder: ((context, index) {
-                print('PlaceList: ${user.lengthPlace}');
+                print('PlaceList: $placeLength');
                 var place = placeList[index];
-                return BoxItem(
-                    city: place['city'],
-                    state: place['state'],
-                    country: place['country'],
-                    ic: place['ic'],
-                    tp: place['tp'],
-                    aqius: place['aqius']);
+                print(place['city']);
+                return (place['ic'] == 'error')
+                    ? const LoadingPage()
+                    : BoxItem(
+                        city: place['city'],
+                        state: place['state'],
+                        country: place['country'],
+                        ic: place['ic'],
+                        tp: place['tp'],
+                        aqius: place['aqius']);
               }),
             )),
           ],
@@ -110,63 +118,59 @@ class BoxItem extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Text(
-                      '$city, $state',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Text('$country', style: TextStyle(fontWeight: FontWeight.w500)),
-                SizedBox(height: 10),
-                Row(
-                  children: [
-                    Image.network(
-                      'https://www.airvisual.com/images/${getImage(ic)}.png',
-                      height: 20,
-                    ),
-                    SizedBox(width: 5),
-                    Text('${tp.toString()}°'),
-                  ],
-                ),
-              ],
+            Container(
+              width: MediaQuery.of(context).size.width * 0.55,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    '$city, $country',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(height: 10),
+                  Text('$state', style: TextStyle(fontWeight: FontWeight.w500)),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Image.network(
+                        'https://www.airvisual.com/images/${getImage(ic)}.png',
+                        height: 20,
+                      ),
+                      SizedBox(width: 5),
+                      Text('${tp.toString()}°'),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            VerticalDivider(),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    SizedBox(width: 5),
-                    Text(
-                      getDescription(aqius),
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                      softWrap: true,
-                    ),
-                  ],
-                ),
-                SizedBox(height: 5),
-                Container(
-                  padding: EdgeInsets.all(1.5),
-                  width: 30,
-                  color: getBgColor(aqius),
-                  child: Center(
-                    child: Text(
-                      aqius.toString(),
-                      style: TextStyle(
-                          fontSize: 15,
-                          color: getTxtColor(aqius),
-                          fontWeight: FontWeight.w600),
+            Container(
+              width: MediaQuery.of(context).size.width * 0.3,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Text(
+                    getDescription(aqius),
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                    textAlign: TextAlign.right,
+                  ),
+                  SizedBox(height: 5),
+                  Container(
+                    padding: EdgeInsets.all(1.5),
+                    width: 30,
+                    color: getBgColor(aqius),
+                    child: Center(
+                      child: Text(
+                        aqius.toString(),
+                        style: TextStyle(
+                            fontSize: 15,
+                            color: getTxtColor(aqius),
+                            fontWeight: FontWeight.w600),
+                      ),
                     ),
                   ),
-                ),
-                Text('US AQI', style: TextStyle(fontWeight: FontWeight.w500)),
-              ],
+                  Text('US AQI', style: TextStyle(fontWeight: FontWeight.w500)),
+                ],
+              ),
             ),
           ],
         ),

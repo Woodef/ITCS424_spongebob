@@ -82,9 +82,11 @@ class _UserPageState extends State<UserPage> {
                     'Log-out',
                     style: TextStyle(fontSize: 20),
                   ),
-                  onTap: () {
+                  onTap: () async {
+                    var user = context.read<UserModel>();
                     // Implement log out functionality
                     FirebaseAuth.instance.signOut();
+                    user.reset();
                     Navigator.pushNamed(context, '/main');
                   },
                 ),

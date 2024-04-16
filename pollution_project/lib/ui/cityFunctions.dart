@@ -28,17 +28,17 @@ Color getTxtColor(int aqius) {
 
 String getDescription(int aqius) {
   if (aqius >= 0 && aqius <= 50) {
-    return 'Good';
+    return 'Good'; // Good
   } else if (aqius >= 51 && aqius <= 100) {
-    return 'Moderate';
+    return 'Moderate'; // Moderate
   } else if (aqius >= 101 && aqius <= 150) {
-    return 'Unhealthy for sensitives';
+    return 'Unhealthy for sensitives'; // Unhealthy for sensitive groups
   } else if (aqius >= 151 && aqius <= 200) {
-    return 'Unhealthy';
+    return 'Unhealthy'; // Unhealthy
   } else if (aqius >= 201 && aqius <= 300) {
-    return 'Very unhealthy';
+    return 'Very unhealthy'; // Very unhealthy
   } else if (aqius >= 301 && aqius <= 500) {
-    return 'Hazardous';
+    return 'Hazardous'; // Hazardous
   } else {
     return 'Error';
   }

@@ -21,16 +21,17 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
   String? _errorMessage;
 
-  Future signIn() async {
+  Future<void> signIn() async {
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: _emailController.text.toLowerCase().trim(),
         password: _passwordController.text.trim(),
       );
       var user = context.read<UserModel>();
-      user.setEmail(_emailController.text.toLowerCase().trim());
-      user.setFullname();
-      user.setPlacesFromSavedPlaces();
+      await user.reset();
+      await user.setEmail(_emailController.text.toLowerCase().trim());
+      await user.setFullname();
+      await user.setPlacesFromSavedPlaces();
       Navigator.pushReplacementNamed(context, '/');
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -50,7 +51,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    var user = context.read<UserModel>();
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -113,11 +114,11 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
                           MaterialButton(
-                            onPressed: () {
+                            onPressed: () async {
                               _formKey.currentState!.save();
                               if (_formKey.currentState!.validate()) {
                                 print(_emailController.text.trim());
-                                signIn();
+                                await signIn();
                               } else {
                                 print("validation failed");
                               }

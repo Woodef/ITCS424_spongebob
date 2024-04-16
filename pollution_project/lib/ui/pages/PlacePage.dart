@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pollution_project/models/user.dart';
+import 'package:pollution_project/ui/pages/LoadingPage.dart';
 import 'package:pollution_project/ui/widgets/MyNavigationBar.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -34,30 +35,72 @@ class _PlacePageState extends State<PlacePage> {
   int _tp = 0;
   int _hu = 0;
   String _ic = '';
+  bool _isLoading = true;
+  int _response_code = 200;
 
   Future<void> _getCity() async {
-    final response = await http.get(Uri.parse(
-        'http://api.airvisual.com/v2/city?city=${widget.city}&state=${widget.state}&country=${widget.country}&key=${dotenv.env['apiKey']}'));
-    if (response.statusCode == 200) {
-      var city = json.decode(response.body);
-      print(city);
-      setState(() {
-        _stateName = city['data']['state'];
-        _countryName = city['data']['country'];
-        _cityName = city['data']['city'];
-        _aqius = city['data']['current']['pollution']['aqius'];
-        _tp = city['data']['current']['weather']['tp'];
-        _hu = city['data']['current']['weather']['hu'];
-        _ic = city['data']['current']['weather']['ic'];
-      });
+    var user = context.watch<UserModel>();
+    Map<String, dynamic> place = user.savePlaces.firstWhere(
+      (element) =>
+          element['country'] == widget.country &&
+          element['state'] == widget.state &&
+          element['city'] == widget.city,
+      orElse: () => {'country': 'empty'},
+    );
+
+    if (place['country'] == 'empty') {
+      final response = await http.get(Uri.parse(
+          'http://api.airvisual.com/v2/city?city=${widget.city}&state=${widget.state}&country=${widget.country}&key=${dotenv.env['apiKey']}'));
+      if (response.statusCode == 200) {
+        var city = json.decode(response.body);
+        print(city);
+        setState(() {
+          _stateName = city['data']['state'];
+          _countryName = city['data']['country'];
+          _cityName = city['data']['city'];
+          _aqius = city['data']['current']['pollution']['aqius'];
+          _tp = city['data']['current']['weather']['tp'];
+          _hu = city['data']['current']['weather']['hu'];
+          _ic = city['data']['current']['weather']['ic'];
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _response_code = response.statusCode;
+          _stateName = 'Unable to fetch data from API';
+          _countryName = 'error: ${response.statusCode}';
+          _cityName = 'error: ${response.statusCode}';
+          _aqius = 0;
+          _tp = 0;
+          _hu = 0;
+          _ic = 'error';
+          _response_code = response.statusCode;
+        });
+        print(response.statusCode);
+      }
     } else {
-      print(response.statusCode);
+      setState(() {
+        _stateName = place['state'];
+        _countryName = place['country'];
+        _cityName = place['city'];
+        _aqius = place['aqius'];
+        _tp = place['tp'];
+        _hu = place['hu'];
+        _ic = place['ic'];
+        _isLoading = false;
+      });
     }
   }
 
   @override
   void initState() {
     super.initState();
+    _isLoading = true;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _getCity();
   }
 
@@ -66,18 +109,12 @@ class _PlacePageState extends State<PlacePage> {
     print(_countryName);
 
     var user = context.watch<UserModel>();
-    user.setCountry(_countryName);
-    user.setState(_stateName);
-    user.setCity(_cityName);
-    user.setAqius(_aqius);
-    user.setTp(_tp);
-    user.setHu(_hu);
-    user.setIc(_ic);
 
     IconData icon;
-    print(user.savePlaces);
-    print(user.lengthPlace);
+    print('PlacePage: ${user.savePlaces}');
+    print('PlacePage: ${user.lengthPlace}');
     print(user.placeExists(_countryName, _stateName, _cityName));
+
     if (user.placeExists(_countryName, _stateName, _cityName)) {
       icon = Icons.remove;
     } else {
@@ -102,42 +139,63 @@ class _PlacePageState extends State<PlacePage> {
           ],
         ),
       ),
-      body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/images/background.png'),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(Colors.white, BlendMode.softLight),
-            ),
-          ),
-          child: Container(
-            child: ListView(
-              children: [
-                MyCurrentDetail(
-                  cityName: user.city,
-                  countryName: user.country,
-                  stateName: user.state,
-                  aqius: user.aqius,
-                  ic: user.ic,
-                  tp: user.tp,
-                  hu: user.hu,
-                )
-              ],
-            ),
-          )),
-      bottomNavigationBar: MyNavigationBar(),
+      body: _isLoading
+          ? const LoadingPage()
+          : Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/background.png'),
+                  fit: BoxFit.cover,
+                  colorFilter:
+                      ColorFilter.mode(Colors.white, BlendMode.softLight),
+                ),
+              ),
+              child: Container(
+                child: ListView(
+                  children: [
+                    MyCurrentDetail(
+                      cityName: _cityName,
+                      countryName: _countryName,
+                      stateName: _stateName,
+                      aqius: _aqius,
+                      ic: _ic,
+                      tp: _tp,
+                      hu: _hu,
+                    )
+                  ],
+                ),
+              )),
+      bottomNavigationBar: const MyNavigationBar(),
       floatingActionButton: FloatingActionButton.small(
-          backgroundColor: Color.fromARGB(255, 255, 255, 255),
+          backgroundColor: const Color.fromARGB(255, 255, 255, 255),
           tooltip: 'Place Added',
-          onPressed: () {
-            if (user.placeExists(_countryName, _stateName, _cityName)) {
-              user.removeFromSavedPlaces(_countryName, _stateName, _cityName);
+          onPressed: () async {
+            if (_ic == 'error') {
+              print('Error onPressed tooltip');
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Error'),
+                  content: const Text('Place cannot be added due to error.'),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, 'OK'),
+                        child: const Text('OK'))
+                  ],
+                ),
+              );
             } else {
-              user.addToSavedPlaces();
+              if (user.placeExists(_countryName, _stateName, _cityName)) {
+                await user.removeFromSavedPlaces(
+                    _countryName, _stateName, _cityName);
+              } else {
+                await user.addToSavedPlaces(
+                    _countryName, _stateName, _cityName, _aqius, _tp, _hu, _ic);
+              }
             }
           },
-          // how to make this change automatically?
-          child: Icon(icon, color: Color.fromARGB(255, 0, 31, 96), size: 28)),
+          child: Icon(icon,
+              color: const Color.fromARGB(255, 0, 31, 96), size: 28)),
     );
   }
 }

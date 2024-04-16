@@ -15,8 +15,9 @@ class MainPage extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            var user = context.read<UserModel>();
             print(snapshot.data);
+            var user = context.read<UserModel>();
+            user.reset();
             user.setEmail(snapshot.data!.email!);
             user.setFullname();
             user.setPlacesFromSavedPlaces();
