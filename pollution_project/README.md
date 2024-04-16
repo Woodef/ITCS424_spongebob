@@ -1,16 +1,41 @@
-# pollution_project
+# Measuring air pollution project (Air pollution system)
 
-A new Flutter project.
+This project is a part of ITCS424: Wireless and Mobile Computing.
 
-## Getting Started
+Members (Section 3):
+Jiraruch Tantiyavarong 6488100
+Warittha Tarntong 6488130
+Warintorn Jirathipwanglad 6488152
+Tayapa Santipap 6488187
 
-This project is a starting point for a Flutter application.
+## Setting up
 
-A few resources to get you started if this is your first Flutter project:
+Assumed: Flutter is installed in your system.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+To set up API key:
+1. Create `.env` in the root directory of your local project
+2. Use API key provided in the report. 
+3. If the provided key doesn't work, get your AirVisual API from (https://dashboard.iqair.com/auth/sign-in?redirectURL=%2Fpersonal%2Fapi-keys)
+    - If you don't have an account, you have to sign up for free to get the API.
+4. Inside `.env`, add your API key as follows `apiKey=<YOUR_API_KEY>`
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Running the application
+1. Navigate to your local project's root directory and run `flutter run`.
+
+## Using the application
+
+Users can try to log in without registering using the following credentials:
+Account 1
+- email: test2@gmail.com
+- password: 123456
+Account 2
+- email: john.doe@gmail.com
+- password: 123456
+
+## Important notes
+
+This project is unstable due to API limitations. 
+
+If the user encounters errors, the user could refresh the Flutter application on your IDE or text editor (on VS code, press 'R' on the terminal).
+
+If the error persists, the user may wait for a while and retry the application again.
