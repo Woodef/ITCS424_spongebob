@@ -2,12 +2,6 @@
 
 This project is a part of ITCS424: Wireless and Mobile Computing.
 
-Members (Section 3):  
-Jiraruch Tantiyavarong 6488100  
-Warittha Tarntong 6488130  
-Warintorn Jirathipwanglad 6488152  
-Tayapa Santipap 6488187  
-
 ## Setting up
 
 Assumed: Flutter is installed in your system.
