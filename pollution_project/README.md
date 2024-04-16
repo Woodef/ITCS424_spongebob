@@ -2,11 +2,11 @@
 
 This project is a part of ITCS424: Wireless and Mobile Computing.
 
-Members (Section 3):
-- Jiraruch Tantiyavarong 6488100  
-- Warittha Tarntong 6488130  
-- Warintorn Jirathipwanglad 6488152  
-- Tayapa Santipap 6488187  
+Members (Section 3):  
+Jiraruch Tantiyavarong 6488100  
+Warittha Tarntong 6488130  
+Warintorn Jirathipwanglad 6488152  
+Tayapa Santipap 6488187  
 
 ## Setting up
 
@@ -24,7 +24,8 @@ To set up API key:
 
 ## Using the application
 
-Users can try to log in without registering using the following credentials:  
+Users can try to log in without registering using the following credentials:
+
 Account 1
 - email: test2@gmail.com  
 - password: 123456  
